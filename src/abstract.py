@@ -14,6 +14,10 @@ class Estimator(metaclass = ABCMeta):
         pass
     
     @abstractmethod
+    def fit_predict(self, x):
+        pass
+    
+    @abstractmethod
     def _update(self, x, y):
         pass
     

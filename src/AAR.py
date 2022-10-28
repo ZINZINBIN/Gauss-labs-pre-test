@@ -2,7 +2,6 @@
 Reference
     - Ridge Regression sketch : https://towardsdatascience.com/how-to-code-ridge-regression-from-scratch-4b3176e5837c
     - Online Ridge Regression Method Using Sliding Windows(https://www.researchgate.net/publication/236648230_Online_Ridge_Regression_Method_Using_Sliding_Windows)
-    - Github : https://github.com/daaltces/pydaal-getting-started/blob/master/4-interactive-tutorials/Regression_online_example.ipynb
 '''
 import numpy as np
 from typing import Union
@@ -38,6 +37,25 @@ class RidgeRegressor(Estimator):
                 y_new = y[t,:].reshape(-1,)
             self._update(x_new, y_new)
             self._update_inv(x_new)
+    
+    def fit_predict(self, x : np.ndarray, y : Union[np.ndarray, np.array]):
+        
+        if len(x.shape) != 2:
+            x = x.reshape(-1, self.input_dims)
+            
+        m,n = x.shape
+        y_hat = []
+        
+        for t in tqdm(range(0,m)):
+            x_new = x[t,:].reshape(-1,1)
+            if type(y) == np.array:
+                y_new = y[t]
+            else:
+                y_new = y[t,:].reshape(-1,)
+                
+            pred = np.matmul(np.matmul(self.B.T, self.A_inv), x_new).item(0)
+            self._update(x_new, y_new)
+            self._update_inv(x_new)
            
     def predict(self, x : Union[np.ndarray, np.array]):
         if len(x.shape) != 2:
@@ -64,20 +82,29 @@ class AAR(RidgeRegressor):
         
         if len(x.shape) == 1:
             x = x.reshape(1, self.input_dims)
-            
+        
+        # update A matrix
         self.A = self.A + np.matmul(x.T,x)
+        
+        # update inverse A matrix
+        x_ = x.reshape(-1,1)
+        dA_inv = np.matmul(np.matmul(self.A_inv, x_), np.matmul(self.A_inv, x_).T)
+        dA_inv /= np.matmul(x_.T,np.matmul(self.A_inv,x_)) + 1
+        self.A_inv = self.A_inv - dA_inv
+        
+        del x_
     
     def update_B(self, x : np.ndarray, y : np.float64):
         
         if len(x.shape) == 1:
             x = x.reshape(1, self.input_dims)
-            
         self.B = self.B + y * x
     
     def __call__(self, x : Union[np.ndarray, np.array]):
-        y_hat = self.predict(x)
+        inv_A = self._compute_inv_A(x.reshape(-1,1))
+        y_hat = np.matmul(np.matmul(self.B.T, inv_A), x.reshape(-1,1))[0]
         return y_hat
-
+    
     def predict(self, x : Union[np.ndarray, np.array]):
         
         if len(x.shape) != 2:
@@ -93,6 +120,33 @@ class AAR(RidgeRegressor):
             
             # Prediction
             pred = np.matmul(np.matmul(self.B.T, inv_A), x_new).item(0)
+            y_hat.append(pred)
+            
+        return np.array(y_hat)
+    
+    def fit_predict(self, x : np.ndarray, y : Union[np.ndarray, np.array]):
+        m,n = x.shape
+        y_hat = []
+        
+        for t in tqdm(range(0,m), desc = "# Aggregating Algorithm for Regression : fit-predict process"):
+            x_new = x[t,:].reshape(-1,1)
+            if type(y) == np.array:
+                y_new = y[t]
+            else:
+                y_new = y[t,:].reshape(-1,)
+            
+            # update inverse matrix of A with xt first
+            self._update_inv(x_new)
+            
+            # use inverse matrix A with x_new
+            inv_A = self._compute_inv_A(x_new)
+            
+            # Prediction
+            pred = np.matmul(np.matmul(self.B.T, inv_A), x_new).item(0)
+            
+            # update A and B after prediction
+            self._update(x_new, y_new)
+            
             y_hat.append(pred)
             
         return np.array(y_hat)

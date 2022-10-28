@@ -8,6 +8,7 @@ import random
 import torch
 import os
 from typing import Union, List
+from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 def read_file(path : str = "./dataset/data.csv", format = None)->pd.DataFrame:
     if format is None:
@@ -40,5 +41,19 @@ def seed_everything(seed_num : int = 42, use_nn : bool = False)->None:
             pass
     return
 
-def compute_metric(gt : Union[np.ndarray, List], pt : Union[np.ndarray, List]):
-    pass
+def MSE(gt : np.array, pt : np.array):
+    return mean_squared_error(gt, pt, squared = True)
+
+def RMSE(gt : np.array, pt : np.array):
+    return mean_squared_error(gt, pt, squared = False)
+
+def MAE(gt: np.array, pt: np.array):
+    return np.mean(np.abs((gt - pt)))
+
+def compute_metrics(gt : Union[np.ndarray, List], pt : Union[np.ndarray, List], algorithm : str):
+    
+    mse = MSE(gt, pt)
+    rmse = RMSE(gt, pt)
+    mae = MAE(gt, pt)
+    
+    print("# {}, mse : {:.3f}, rmse : {:.3f}, mae : {:.3f}".format(algorithm, mse, rmse, mae))
