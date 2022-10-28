@@ -40,10 +40,8 @@ class RidgeRegressor(Estimator):
             self._update_inv(x_new)
            
     def predict(self, x : Union[np.ndarray, np.array]):
-        
         if len(x.shape) != 2:
             x = x.reshape(-1, self.input_dims)
-        
         m,n = x.shape
         y_hat = []
         for t in range(0,m):
@@ -51,8 +49,8 @@ class RidgeRegressor(Estimator):
             pred = np.matmul(np.matmul(self.B.T, self.A_inv), x_new).item(0)
             y_hat.append(pred)
         return np.array(y_hat)
-
-class ARR(RidgeRegressor):
+    
+class AAR(RidgeRegressor):
     def __init__(self, input_dims : int, gamma : float = 0.01):
         super().__init__(input_dims, gamma)
         
@@ -61,6 +59,24 @@ class ARR(RidgeRegressor):
         dA_inv = np.matmul(np.matmul(self.A_inv, x), np.matmul(self.A_inv, x).T)
         dA_inv /= np.matmul(x.T,np.matmul(self.A_inv,x)) + 1
         return self.A_inv - dA_inv
+    
+    def update_A(self, x : np.ndarray):
+        
+        if len(x.shape) == 1:
+            x = x.reshape(1, self.input_dims)
+            
+        self.A = self.A + np.matmul(x.T,x)
+    
+    def update_B(self, x : np.ndarray, y : np.float64):
+        
+        if len(x.shape) == 1:
+            x = x.reshape(1, self.input_dims)
+            
+        self.B = self.B + y * x
+    
+    def __call__(self, x : Union[np.ndarray, np.array]):
+        y_hat = self.predict(x)
+        return y_hat
 
     def predict(self, x : Union[np.ndarray, np.array]):
         

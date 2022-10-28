@@ -17,4 +17,3 @@ def clean_nan(df : pd.DataFrame):
     else:
         print("Process for eliminating row data containing NaN / Null values")
         df = df.dropna(axis = 0)
-   
