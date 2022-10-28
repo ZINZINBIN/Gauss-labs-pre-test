@@ -7,8 +7,9 @@ Reference
 import numpy as np
 from typing import Union
 from tqdm.auto import tqdm
+from src.abstract import Estimator
 
-class RidgeRegressor(object):
+class RidgeRegressor(Estimator):
     def __init__(self, input_dims : int, gamma : float = 0.01):
         self.input_dims = input_dims
         self.gamma = gamma
@@ -38,7 +39,11 @@ class RidgeRegressor(object):
             self._update(x_new, y_new)
             self._update_inv(x_new)
            
-    def predict(self, x : np.ndarray):
+    def predict(self, x : Union[np.ndarray, np.array]):
+        
+        if len(x.shape) != 2:
+            x = x.reshape(-1, self.input_dims)
+        
         m,n = x.shape
         y_hat = []
         for t in range(0,m):
@@ -57,7 +62,11 @@ class ARR(RidgeRegressor):
         dA_inv /= np.matmul(x.T,np.matmul(self.A_inv,x)) + 1
         return self.A_inv - dA_inv
 
-    def predict(self, x : np.ndarray):
+    def predict(self, x : Union[np.ndarray, np.array]):
+        
+        if len(x.shape) != 2:
+            x = x.reshape(-1, self.input_dims)
+        
         m,n = x.shape
         y_hat = []
         for t in range(0,m):
