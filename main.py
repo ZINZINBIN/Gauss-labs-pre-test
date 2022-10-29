@@ -4,6 +4,7 @@ from src.FLH import FLH, FLH_Revised
 from src.AAR import AAR
 from src.preprocessing import timestamp_parsing, clean_nan
 import matplotlib.pyplot as plt
+import pandas as pd
 
 DATASET_PATH = "./dataset/data.csv"
 
@@ -42,8 +43,6 @@ if __name__ == "__main__":
     plt.legend()
     plt.savefig("./result/AAR.png")
     
-    
-    
     # step 2. Follow-Leading-History algorithms(FLH) with Agregating Algorithms for Regression(AAR)
     model_FLH = FLH(alpha = 0.1, gamma = 0.1, input_dims = 4)
     y_flh = model_FLH.fit_predict(x, y)
@@ -69,7 +68,18 @@ if __name__ == "__main__":
     plt.savefig("./result/FLH_revised.png")
     
     
+    # compare the result using different metrics
     print("="*24," Result ","="*24)
     compute_metrics(y, y_aar, algorithm = "AAR")
     compute_metrics(y, y_flh, algorithm = "FLH")
     compute_metrics(y, y_flh_revised, algorithm = "FLH-Revised")
+    
+    # save file as csv
+    save_file = pd.DataFrame({
+        "Time" : df['Time'].values,
+        "Measurement":df["Measurement"],
+        "Prediction_AAR":y_aar,
+        "Prediction_FLH":y_flh,
+        "Prediction_FLH_Revised":y_flh_revised
+    })
+    save_file.to_csv("./result/predicton.csv")
