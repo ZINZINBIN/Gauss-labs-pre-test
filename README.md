@@ -11,6 +11,15 @@
 (2) Aggregating Algorithm for Regression
 (3) Follow-the-Leading-History(FLH) algorithm
 
+## Result
+<div>
+    <p>Prediction values for every time step of data with AAR and FLH algorithms</p>
+    <p float = "left">
+        <img src="/result/AAR.PNG"  width="320" height="196">
+        <img src="/result/FLH.PNG"  width="320" height="196">
+    </p>
+</div>
+
 ## Reference
 - Efficient Learning Algorithms for Changing Environments : https://icml.cc/Conferences/2009/papers/75.pdf
 - Adaptive Algorithms for Online Decision Problems : https://www.researchgate.net/publication/220138797_Adaptive_Algorithms_for_Online_Decision_Problems
