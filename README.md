@@ -15,8 +15,8 @@
 <div>
     <p>Prediction values for every time step of data with AAR and FLH algorithms</p>
     <p float = "left">
-        <img src="/result/AAR.PNG"  width="320" height="196">
-        <img src="/result/FLH.PNG"  width="320" height="196">
+        <img src="/result/AAR.png"  width="320" height="196">
+        <img src="/result/FLH.png"  width="320" height="196">
     </p>
 </div>
 
