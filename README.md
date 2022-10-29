@@ -7,9 +7,9 @@
 ## Detail
 - Programming Language / Package : Python, Numpy, Scikit-learn(metrics)
 - Algorithms for implementation
-(1) Modified Ridge Regression
-(2) Aggregating Algorithm for Regression
-(3) Follow-the-Leading-History(FLH) algorithm
+    1. Modified Ridge Regression
+    2. Aggregating Algorithm for Regression
+    3. Follow-the-Leading-History(FLH) algorithm
 
 ## Result
 <div>
